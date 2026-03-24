@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+//////////////////////
+// ENUMS
+//////////////////////
+
+enum Role {
+  ADMIN
+  HR
+  EMPLOYEE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+}
+
+//////////////////////
+// MODELS
+//////////////////////
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(EMPLOYEE)
+
+  employee  Employee?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Department {
+  id        String     @id @default(cuid())
+  name      String     @unique
+
+  employees Employee[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Employee {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  departmentId  String
+
+  designation   String
+  salary        Float
+
+  user          User        @relation(fields: [userId], references: [id])
+  department    Department  @relation(fields: [departmentId], references: [id])
+
+  leaves        Leave[]
+  payrolls      Payroll[]
+  attendance    Attendance[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Leave {
+  id          String      @id @default(cuid())
+  employeeId  String
+
+  startDate   DateTime
+  endDate     DateTime
+  reason      String
+  status      LeaveStatus @default(PENDING)
+
+  employee    Employee    @relation(fields: [employeeId], references: [id])
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Payroll {
+  id          String     @id @default(cuid())
+  employeeId  String
+
+  baseSalary  Float
+  bonus       Float      @default(0)
+  deductions  Float      @default(0)
+  netSalary   Float
+
+  payDate     DateTime
+
+  employee    Employee   @relation(fields: [employeeId], references: [id])
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Attendance {
+  id           String            @id @default(cuid())
+  employeeId   String
+
+  date         DateTime
+  status       AttendanceStatus
+
+  clockIn      DateTime?
+  clockOut     DateTime?
+
+  employee     Employee          @relation(fields: [employeeId], references: [id])
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+
+  action      String
+  entity      String
+  entityId    String
+
+  userId      String?
+  changes     Json?
+
+  createdAt   DateTime @default(now())
+}
