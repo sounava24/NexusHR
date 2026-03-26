@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 
 export async function POST(req: Request) {
   await requireRole(["ADMIN", "HR"])
