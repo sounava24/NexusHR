@@ -6,8 +6,8 @@ export default {
   providers: [
     // 🌐 Google Login (Edge compatible)
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "missing_client_id_during_build",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "missing_secret_during_build",
       allowDangerousEmailAccountLinking: true,
     }),
   ],
