@@ -1,19 +1,35 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+import { Role } from "@prisma/client"
 
-  session: {
-    strategy: "jwt",
-  },
+declare module "next-auth" {
+  interface User {
+    id: string
+    role: Role
+  }
+  interface Session {
+    user: User
+  }
+}
+
+import authConfig from "./auth.config"
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  // @ts-ignore - resolve type mismatch between @auth/prisma-adapter and next-auth beta
+  adapter: PrismaAdapter(prisma) as any,
+
+  // IMPORTANT: The session strategy and callbacks are now inherited from authConfig
 
   providers: [
-    // 🔐 Credentials Login
+    // Inherit edge-compatible providers from config (like Google)
+    ...authConfig.providers,
+
+    // 🔐 Node-only Credentials Login
     Credentials({
       name: "Credentials",
       credentials: {
@@ -29,14 +45,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: credentials.email as string },
         })
 
-        if (!user) throw new Error("User not found")
+        if (!user || !user.password) throw new Error("Invalid credentials")
 
         const isValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         )
 
-        if (!isValid) throw new Error("Invalid password")
+        if (!isValid) throw new Error("Invalid credentials")
 
         return {
           id: user.id,
@@ -46,35 +62,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       },
     }),
-
-    // 🌐 Google Login (optional)
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
   ],
 
-  callbacks: {
-    // 🔥 Store role in JWT
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role
-      }
-      return token
-    },
+  events: {
+    async createUser({ user }) {
+      if (!user.email) return
 
-    // 🔥 Send role to session
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub!
-        session.user.role = token.role
-      }
-      return session
-    },
-  },
+      try {
+        let defaultDept = await prisma.department.findUnique({
+          where: { name: "Unassigned" },
+        })
 
-  pages: {
-    signIn: "/login",
+        if (!defaultDept) {
+          defaultDept = await prisma.department.create({
+            data: { name: "Unassigned" },
+          })
+        }
+
+        // Link newly authorized OAuth users to an Employee record
+        await prisma.employee.create({
+          data: {
+            userId: user.id!,
+            departmentId: defaultDept.id,
+            designation: "New Hire",
+            salary: 0,
+          },
+        })
+      } catch (error) {
+        console.error("Failed to default-assign new OAuth user:", error)
+        // Eating the error here prevents NextAuth from entering an infinite fail loop on signin
+      }
+    },
   },
 
   secret: process.env.AUTH_SECRET,
