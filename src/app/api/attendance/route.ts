@@ -1,51 +1,83 @@
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // ✅ IMPORTANT
+
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
+// ✅ CLOCK IN
 export async function POST() {
-  const session = await auth()
-  if (!session) throw new Error("Unauthorized")
+  try {
+    const session = await auth()
 
-  const employee = await prisma.employee.findUnique({
-    where: { userId: session.user.id },
-  })
+    if (!session?.user?.id) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-  const today = new Date()
+    const employee = await prisma.employee.findUnique({
+      where: { userId: session.user.id },
+    })
 
-  const attendance = await prisma.attendance.create({
-    data: {
-      employeeId: employee!.id,
-      date: today,
-      status: "PRESENT",
-      clockIn: today,
-    },
-  })
+    if (!employee) {
+      return Response.json({ error: "Employee not found" }, { status: 404 })
+    }
 
-  return Response.json(attendance)
+    const today = new Date()
+
+    const attendance = await prisma.attendance.create({
+      data: {
+        employeeId: employee.id,
+        date: today,
+        status: "PRESENT",
+        clockIn: today,
+      },
+    })
+
+    return Response.json(attendance)
+
+  } catch (error) {
+    console.error(error)
+    return Response.json({ error: "Internal Server Error" }, { status: 500 })
+  }
 }
-export async function PUT(req: Request) {
-  const session = await auth()
-  if (!session) throw new Error("Unauthorized")
 
-  const employee = await prisma.employee.findUnique({
-    where: { userId: session.user.id },
-  })
 
-  const today = new Date()
+// ✅ CLOCK OUT
+export async function PUT() {
+  try {
+    const session = await auth()
 
-  const record = await prisma.attendance.findFirst({
-    where: {
-      employeeId: employee!.id,
-    },
-    orderBy: { createdAt: "desc" },
-  })
+    if (!session?.user?.id) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-  const updated = await prisma.attendance.update({
-    where: { id: record!.id },
-    data: {
-      clockOut: today,
-    },
-  })
+    const employee = await prisma.employee.findUnique({
+      where: { userId: session.user.id },
+    })
 
-  return Response.json(updated)
+    if (!employee) {
+      return Response.json({ error: "Employee not found" }, { status: 404 })
+    }
+
+    const record = await prisma.attendance.findFirst({
+      where: { employeeId: employee.id },
+      orderBy: { createdAt: "desc" },
+    })
+
+    if (!record) {
+      return Response.json({ error: "No attendance record found" }, { status: 404 })
+    }
+
+    const updated = await prisma.attendance.update({
+      where: { id: record.id },
+      data: {
+        clockOut: new Date(),
+      },
+    })
+
+    return Response.json(updated)
+
+  } catch (error) {
+    console.error(error)
+    return Response.json({ error: "Internal Server Error" }, { status: 500 })
+  }
 }
