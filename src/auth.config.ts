@@ -9,6 +9,11 @@ export default {
       clientId: process.env.GOOGLE_CLIENT_ID || "missing_client_id_during_build",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "missing_secret_during_build",
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
     }),
   ],
   session: {
