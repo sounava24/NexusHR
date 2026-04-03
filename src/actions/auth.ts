@@ -33,7 +33,13 @@ export async function registerUser(formData: FormData) {
 
   // Count to see if first user, make them ADMIN
   const userCount = await prisma.user.count()
-  const role = userCount === 0 ? "ADMIN" : "EMPLOYEE"
+  
+  let role: "ADMIN" | "HR" | "EMPLOYEE" = "EMPLOYEE"
+  if (userCount === 0) {
+    role = "ADMIN"
+  } else if (designation === "HR Manager") {
+    role = "HR"
+  }
 
   await prisma.user.create({
     data: {

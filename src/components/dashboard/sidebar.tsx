@@ -4,7 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { 
   BarChart3, Users, Building, Wallet, 
-  CalendarClock, CalendarRange, Settings 
+  CalendarClock, CalendarRange, Settings, ShieldAlert,
+  Briefcase
 } from "lucide-react"
 
 export default function Sidebar({ role }: { role: string }) {
@@ -12,11 +13,13 @@ export default function Sidebar({ role }: { role: string }) {
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: BarChart3, roles: ["ADMIN", "HR", "EMPLOYEE"] },
+    { name: "Team Workspace", href: "/dashboard/workspace", icon: Briefcase, roles: ["ADMIN", "HR", "EMPLOYEE"] },
     { name: "Employees", href: "/dashboard/employees", icon: Users, roles: ["ADMIN", "HR"] },
     { name: "Departments", href: "/dashboard/departments", icon: Building, roles: ["ADMIN", "HR"] },
     { name: "Attendance", href: "/dashboard/attendance", icon: CalendarClock, roles: ["ADMIN", "HR", "EMPLOYEE"] },
     { name: "Leaves", href: "/dashboard/leaves", icon: CalendarRange, roles: ["ADMIN", "HR", "EMPLOYEE"] },
     { name: "Payroll", href: "/dashboard/payroll", icon: Wallet, roles: ["ADMIN", "HR", "EMPLOYEE"] },
+    { name: "Access Control", href: "/dashboard/admin/users", icon: ShieldAlert, roles: ["ADMIN"] },
   ]
 
   const filteredNav = navItems.filter((item) => item.roles.includes(role))

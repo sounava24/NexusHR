@@ -1,7 +1,9 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { MountainSnow, ArrowRight, Users, Clock, ShieldCheck } from "lucide-react"
+import { MountainSnow, ArrowRight, Users, Clock, ShieldCheck, PlayCircle } from "lucide-react"
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/layout/animations"
+import { Footer } from "@/components/layout/footer"
 
 export const dynamic = "force-dynamic"
 
@@ -44,23 +46,30 @@ export default async function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-24 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300 mb-8 backdrop-blur-md">
-          <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
-          Introducing NexusHR 2.0
-        </div>
+        <FadeIn delay={0.1}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300 mb-8 backdrop-blur-md">
+            <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+            Introducing NexusHR 2.0
+          </div>
+        </FadeIn>
         
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter mb-8 max-w-5xl leading-[1.1]">
-          Manage your team with <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400">
-            precision and ease.
-          </span>
-        </h1>
+        <FadeIn delay={0.2}>
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter mb-8 max-w-5xl leading-[1.1]">
+            Manage your team with <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400">
+              precision and ease.
+            </span>
+          </h1>
+        </FadeIn>
         
-        <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed">
-          The all-in-one premium employee management system built for modern teams. Streamline attendance, leaves, payroll, and performance in one beautiful dashboard.
-        </p>
+        <FadeIn delay={0.3}>
+          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed">
+            The all-in-one premium employee management system built for modern teams. Streamline attendance, leaves, payroll, and performance in one beautiful dashboard.
+          </p>
+        </FadeIn>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4">
+        <FadeIn delay={0.4} className="w-full">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           {session ? (
             <Link href="/dashboard" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98] flex items-center justify-center gap-2 text-lg">
               Go to Dashboard <ArrowRight className="w-5 h-5" />
@@ -70,38 +79,43 @@ export default async function Home() {
               <Link href="/register" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] active:scale-[0.98] flex items-center justify-center gap-2 text-lg">
                 Start Free Trial <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link href="/login" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all backdrop-blur-md active:scale-[0.98] flex items-center justify-center text-lg">
-                View Demo
+              <Link href="/login" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all backdrop-blur-md active:scale-[0.98] flex items-center justify-center gap-2 text-lg">
+                <PlayCircle className="w-5 h-5" /> View Demo
               </Link>
             </>
           )}
         </div>
+        </FadeIn>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl w-full text-left">
-          <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors group">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl w-full text-left">
+          <StaggerItem className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors group">
             <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/30 transition-colors">
               <Users className="w-6 h-6 text-indigo-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Employee Hub</h3>
             <p className="text-zinc-400 leading-relaxed">Centralized directory for all employee data, departments, and role management.</p>
-          </div>
-          <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors group">
+          </StaggerItem>
+          
+          <StaggerItem className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors group">
             <div className="w-12 h-12 bg-violet-500/20 rounded-2xl flex items-center justify-center mb-6 border border-violet-500/20 group-hover:bg-violet-500/30 transition-colors">
               <Clock className="w-6 h-6 text-violet-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Time & Attendance</h3>
             <p className="text-zinc-400 leading-relaxed">Automated tracking of work hours, leaves, and real-time attendance analytics.</p>
-          </div>
-          <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors group">
+          </StaggerItem>
+          
+          <StaggerItem className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-colors group">
             <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors">
               <ShieldCheck className="w-6 h-6 text-emerald-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Secure Payroll</h3>
             <p className="text-zinc-400 leading-relaxed">Bank-grade security for seamless payroll processing and automated salary slips.</p>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
       </main>
+
+      <Footer />
     </div>
   )
 }

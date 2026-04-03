@@ -15,7 +15,17 @@ export default async function DashboardLayout({
 
   const dbUser = await prisma.user.findUnique({
     where: { id: session.user.id },
+    include: {
+      employee: {
+        include: { department: true }
+      }
+    }
   })
+
+  // Lock out Google Login users who haven't completed onboarding setup
+  if (dbUser?.employee?.department?.name === "Unassigned") {
+    redirect("/onboarding")
+  }
 
   const activeUser = { ...session.user, ...dbUser }
 
