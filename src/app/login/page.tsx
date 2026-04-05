@@ -4,8 +4,10 @@ import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { MountainSnow } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -15,7 +17,6 @@ export default function LoginPage() {
       <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden">
         {/* Subtle background gradient blob */}
         <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-gradient-to-br from-indigo-600/20 to-violet-900/40 blur-3xl rounded-full" />
-        
         <div className="relative z-10 flex flex-col items-center">
           <div className="p-4 bg-white/5 rounded-2xl backdrop-blur-md border border-white/10 mb-8 shadow-2xl">
             <MountainSnow className="w-20 h-20 text-indigo-400" />
@@ -29,9 +30,11 @@ export default function LoginPage() {
 
       {/* Right side: login form */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 lg:px-20 relative z-10">
+        
         <div className="w-full max-w-md p-8 sm:p-12 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl space-y-8">
           <div className="space-y-2">
-            <h2 className="text-3xl font-semibold tracking-tight">Welcome back</h2>
+           <div className="flex justify-between items-center"> <h2 className="text-3xl font-semibold tracking-tight">Welcome back</h2>
+             <button className="border border-white/10 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl" onClick={() => router.push("/")}>Home</button></div>
             <p className="text-sm text-zinc-400">Sign in to your account to continue</p>
           </div>
 

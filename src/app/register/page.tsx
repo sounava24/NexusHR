@@ -5,8 +5,10 @@ import { MountainSnow, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { registerUser } from "@/actions/auth"
 import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [pending, setPending] = useState(false)
   const [error, setError] = useState("")
 
@@ -43,7 +45,8 @@ export default function RegisterPage() {
       <div className="flex-1 flex flex-col justify-center items-center px-6 lg:px-20 relative z-10">
         <div className="w-full max-w-md p-8 sm:p-12 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl space-y-8">
           <div className="space-y-2">
-            <h2 className="text-3xl font-semibold tracking-tight">Create an account</h2>
+            <div className="flex justify-between items-center"><h2 className="text-3xl font-semibold tracking-tight">Create an account</h2>
+            <button className="border border-white/10 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl" onClick={() => router.push("/")}>Home</button></div>
             <p className="text-sm text-zinc-400">Enter your details to get started</p>
           </div>
 
